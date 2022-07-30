@@ -11,23 +11,21 @@
         case = value: set: if hasAttr value set then set.${value} else set.default;
         filterOptions = filterAttrs (name: value:
             typeOf value == "set" && (value ? visible -> (!(value.visible == "shallow") && value.visible)));
+        ofType = value: {
+            elem = mkOption {
+                type = value.type.nestedTypes.elemType;
+                description = "";
+            };
+        };
         transformOptions = options: flip mapAttrs (filterOptions options) (name: value:
             if value ? _type && hasPrefix "option" value._type
                 then {
                     type = value.type.name;
                 } // (case value.type.name {
-                    attrsOf = transformOptions {
-                        elem = mkOption {
-                            type = value.type.nestedTypes.elemType;
-                            description = "";
-                        };
-                    };
-                    listOf = transformOptions {
-                        elem = mkOption {
-                            type = value.type.nestedTypes.elemType;
-                            description = "";
-                        };
-                    };
+                    attrsOf = transformOptions (ofType value);
+                    listOf  = transformOptions (ofType value);
+                    nullOr  = transformOptions (ofType value);
+                    either  = transformOptions (ofType { type.nestedTypes.elemType = types.anything; });
                     submodule = transformOptions (evalModules {
                         modules = value.type.getSubModules;
                     }).options;
