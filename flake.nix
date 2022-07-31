@@ -25,7 +25,7 @@
                     attrsOf = transformOptions (ofType value);
                     listOf  = transformOptions (ofType value);
                     nullOr  = transformOptions (ofType value);
-                    either  = transformOptions (ofType { type.nestedTypes.elemType = types.anything; });
+                    uniq    = transformOptions (ofType value);
                     submodule = transformOptions (evalModules {
                         modules = value.type.getSubModules;
                     }).options;
